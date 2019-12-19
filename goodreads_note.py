@@ -45,7 +45,6 @@ plt.title("Books that Ben has read")
 plt.savefig(f"out/bookWaterfall", bbox_inches="tight")
 plt.savefig(f"out/bookWaterfall.pdf", bbox_inches="tight")
 #%%
-
 cols_to_drop = [
     "Unnamed: 0",
     "book",
@@ -77,6 +76,8 @@ def dataise(d):
 
 tb.book_data = tb.book_data.apply(dataise)
 tb.head()
+#%%
+plt.rcParams["figure.figsize"] = (8, 8)
 #%%
 tb.publication_year.value_counts().sort_index().plot(kind="bar")
 plt.title("Publication year of books read in the last 6ish years")
