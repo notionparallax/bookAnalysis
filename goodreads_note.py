@@ -78,6 +78,10 @@ tb.book_data = tb.book_data.apply(dataise)
 tb.head()
 #%%
 plt.rcParams["figure.figsize"] = (8, 8)
+# %%
+print(
+    f"Median year: {int(tb.publication_year.median())}, mean year: {int(tb.publication_year.mean())}"
+)
 #%%
 tb.publication_year.value_counts().sort_index().plot(kind="bar")
 plt.title("Publication year of books read in the last 6ish years")

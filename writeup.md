@@ -79,6 +79,8 @@ I stole an idea from someone a while ago, that books are mostly a long term medi
 
 ![](out/publicationYearHist.png)
 
+Median year: 2012, mean year: 2004
+
 That might not be strictly true. I read the Odyssey this year, and that's listed as 2019 because it's a new translation.
 
 ![](out/author_top_30.png)
