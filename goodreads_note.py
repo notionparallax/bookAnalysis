@@ -1,12 +1,13 @@
 #%%
-import requests as r
-import json
-import xmltodict
-import pandas as pd
 from dateutil import parser
-import matplotlib.pyplot as plt
 import datetime
+import json
 import math
+import matplotlib.pyplot as plt
+import os
+import pandas as pd
+import requests as r
+import xmltodict
 
 # %%
 tb = pd.read_excel("modified_books.xlsx")
@@ -42,6 +43,7 @@ plt.tick_params(axis="y", which="both", left=False, right=False, labelleft=False
 plt.grid(True)
 plt.title("Books that Ben has read")
 plt.savefig(f"out/bookWaterfall", bbox_inches="tight")
+plt.savefig(f"out/bookWaterfall.pdf", bbox_inches="tight")
 #%%
 
 cols_to_drop = [
@@ -89,7 +91,10 @@ plt.xlabel("Year")
 plt.savefig(f"out/publicationYearHist", bbox_inches="tight")
 
 # %%
-[x for x in tb.num_pages if type(x) is not int]
+print(
+    f"Median pages: {int(tb.num_pages.median())}, mean pages: {int(tb.num_pages.mean())}"
+)
+#%%
 tb.num_pages.hist(bins=45)
 plt.title("Number of pages in these books")
 plt.ylabel("Count of books")
@@ -195,7 +200,7 @@ plt.savefig(f"out/gender_of_books_read", bbox_inches="tight")
 all_df.ethnicity.value_counts().plot(kind="bar", rot=0)
 plt.title("Ethnicity of unique first authors")
 plt.ylabel("Count of books")
-plt.xlabel("The gender I've guessed")
+plt.xlabel("The ethnicity I've guessed")
 plt.savefig(f"out/Ethnicity_of_books_read", bbox_inches="tight")
 #%%
 all_df["reading_year"] = all_df.dt_started_at.apply(lambda x: x.year)
@@ -249,3 +254,14 @@ plt.savefig(f"out/compound_diversity_Fic_Nonfic", bbox_inches="tight")
 
 
 # %%
+os.listdir("out")
+
+
+# %%
+from fractions import Fraction
+
+fic_data = fic_data = all_df.groupby(["reading_year", "ficOrNonFic"]).size().unstack()
+fic_data["ratio"] = fic_data.apply(
+    lambda x: Fraction((x.NonFiction / x.Fiction) / 2).limit_denominator(10), axis=1
+)
+fic_data.ratio
