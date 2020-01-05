@@ -108,7 +108,9 @@ plt.savefig(f"out/numPages", bbox_inches="tight")
 
 #%%
 tb.format.value_counts().plot(kind="bar", rot=20)
-plt.title("Format")
+plt.title(
+    "Number of books read, split by format,\nof books read in the last 6ish years"
+)
 plt.ylabel("Count of books")
 plt.xlabel("Format of book")
 plt.savefig(f"out/format", bbox_inches="tight")
@@ -284,25 +286,29 @@ plt.title(
 )
 plt.ylabel("Pages read")
 plt.xlabel("Year")
-plt.savefig(f"out/publicationYearBarByPages", bbox_inches="tight")
+plt.savefig(f"out/publication_yearBarByPages", bbox_inches="tight")
 
 # %%
-all_df.groupby("format").sum().num_pages.sort_index().plot(kind="bar")
+all_df.groupby("format").sum().num_pages.sort_index().plot(kind="bar", rot=20)
 plt.title(
-    "Number of pages read, split by format," "\nof books read in the last 6ish years"
+    "Number of pages read, split by format,\nof books read in the last 6ish years"
 )
 plt.ylabel("Pages read")
 plt.xlabel("Year")
 plt.savefig(f"out/formatBarByPages", bbox_inches="tight")
 #%%
-all_df.groupby("compound_diversity").sum().num_pages.sort_index().plot(kind="bar")
-plt.title(
-    "Number of pages read, split by 'compound_diversity',"
-    "\nof books read in the last 6ish years"
+(
+    all_df.groupby(["compound_diversity", "ficOrNonFic"])
+    .sum()
+    .num_pages.unstack()
+    .plot(kind="bar", stacked=True, rot=0)
 )
-plt.ylabel("Pages read")
-plt.xlabel("Year")
-plt.savefig(f"out/compound_diversityBarByPages", bbox_inches="tight")
+plt.title(
+    'Split between fiction and non fiction,\nsplit by "compound diversity", measured by page count'
+)
+plt.ylabel("Count of pages")
+plt.xlabel("Somewhat arbitrary Buckets")
+plt.savefig(f"out/compound_diversity_Fic_Nonfic_byPages", bbox_inches="tight")
 
 #%%
 all_df.groupby("reading_year").sum().num_pages.sort_index().plot(kind="bar")
@@ -315,3 +321,42 @@ plt.xlabel("Year")
 plt.savefig(f"out/reading_yearBarByPages", bbox_inches="tight")
 
 #%%
+all_df.groupby("reading_year").count().num_pages.sort_index().plot(kind="bar")
+plt.title(
+    "Number of books read, split by reading year,"
+    "\nof books read in the last 6ish years"
+)
+plt.ylabel("Pages read")
+plt.xlabel("Year")
+plt.savefig(f"out/reading_yearBarByBookCount", bbox_inches="tight")
+
+
+# %%
+(
+    all_df.groupby("compound_diversity")
+    .mean()
+    .num_pages.plot(kind="bar", stacked=True, rot=20)
+)
+plt.title("Mean number of pages per book by each diversity bucket")
+plt.ylabel("pages")
+plt.xlabel("Somewhat arbitrary Buckets")
+plt.savefig(f"out/compound_diversityAvePages", bbox_inches="tight")
+# %%
+(all_df.groupby("sexygendery").mean().num_pages.plot(kind="bar", stacked=True, rot=20))
+plt.title("Mean number of pages per book by [guessed] gender")
+plt.ylabel("pages")
+plt.xlabel("Somewhat arbitrary Buckets")
+plt.savefig(f"out/sexygenderyAvePages", bbox_inches="tight")
+
+#%%
+hm = all_df[all_df.compound_diversity == "Hispanic-Man"].iloc[0]
+bm = all_df[all_df.compound_diversity == "Black-Man"].iloc[0]
+print(
+    f"Surprisingly&mdash;to me&mdash;it looks like I've only read one book by "
+    f"a black man in the last 6 years "
+    f"([{bm.title}]({bm.url}) by [{bm.author_1_name}]({bm.link})). "
+    "and one book by a Hispanic man "
+    f"([{hm.title}({hm.url}) by [{hm.author_1_name}]({hm.link})) "
+    "Perhaps some kind of more forceful intervention is needed?"
+)
+
