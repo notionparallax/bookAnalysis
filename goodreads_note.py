@@ -97,9 +97,9 @@ plt.savefig(f"out/publicationYearHist", bbox_inches="tight")
 
 # %%
 print(
-    f"Median pages: {int(tb.num_pages.median())}, mean pages: {int(tb.num_pages.mean())}"
+    f"Median pages: {int(tb.num_pages.median())}, "
+    f"mean pages: {int(tb.num_pages.mean())}"
 )
-#%%
 tb.num_pages.hist(bins=45)
 plt.title("Number of pages in these books")
 plt.ylabel("Count of books")
@@ -169,31 +169,31 @@ Hispanic or Latino. A person of Cuban, Mexican, Puerto Rican, South or Central A
 Native Hawaiian or Other Pacific Islander. A person having origins in any of the original peoples of Hawaii, Guam, Samoa, or other Pacific Islands.
 White.
 """
-adf = pd.read_excel("authors.xlsx")
-adf.head()
+authors_df = pd.read_excel("authors.xlsx")
+authors_df.head()
 #%%
-adf.sexygendery.value_counts().plot(kind="bar", rot=0)
+authors_df.sexygendery.value_counts().plot(kind="bar", rot=0)
 plt.title("Gender of unique first authors")
 plt.ylabel("Count of authors")
 plt.xlabel("The gender I've guessed")
 plt.savefig(f"out/Gender_count_of_unique_first_authors", bbox_inches="tight")
 #%%
-adf.ethnicity.value_counts().plot(kind="bar", rot=0)
+authors_df.ethnicity.value_counts().plot(kind="bar", rot=0)
 plt.title("Ethnicity of unique first authors")
 plt.ylabel("Count of authors")
 plt.xlabel("The ethnicity I've guessed")
 plt.savefig(f"out/first_author_ethnicity", bbox_inches="tight")
 #%%
-adf["compound_diversity"] = adf.apply(
+authors_df["compound_diversity"] = authors_df.apply(
     lambda x: f"{x.ethnicity}-{x.sexygendery}", axis=1
 )
-adf.compound_diversity.value_counts().plot(kind="bar")
+authors_df.compound_diversity.value_counts().plot(kind="bar")
 plt.title('"Compound" diversity of unique first authors')
 plt.ylabel("Count of authors")
 plt.xlabel("joined together")
 plt.savefig(f"out/compundDiversity", bbox_inches="tight")
 #%%
-all_df = tb.merge(adf, right_on="name", left_on="author_1_name")
+all_df = tb.merge(authors_df, right_on="name", left_on="author_1_name")
 all_df.sample(4)
 #%%
 all_df.sexygendery.value_counts().plot(kind="bar", rot=0)
@@ -270,3 +270,48 @@ fic_data["ratio"] = fic_data.apply(
     lambda x: Fraction((x.NonFiction / x.Fiction) / 2).limit_denominator(10), axis=1
 )
 fic_data.ratio
+
+
+# %%
+all_df.columns
+
+
+#%%
+all_df.groupby("publication_year").sum().num_pages.sort_index().plot(kind="bar")
+plt.title(
+    "Number of pages read, split by publication year,"
+    "\nof books read in the last 6ish years"
+)
+plt.ylabel("Pages read")
+plt.xlabel("Year")
+plt.savefig(f"out/publicationYearBarByPages", bbox_inches="tight")
+
+# %%
+all_df.groupby("format").sum().num_pages.sort_index().plot(kind="bar")
+plt.title(
+    "Number of pages read, split by format," "\nof books read in the last 6ish years"
+)
+plt.ylabel("Pages read")
+plt.xlabel("Year")
+plt.savefig(f"out/formatBarByPages", bbox_inches="tight")
+#%%
+all_df.groupby("compound_diversity").sum().num_pages.sort_index().plot(kind="bar")
+plt.title(
+    "Number of pages read, split by 'compound_diversity',"
+    "\nof books read in the last 6ish years"
+)
+plt.ylabel("Pages read")
+plt.xlabel("Year")
+plt.savefig(f"out/compound_diversityBarByPages", bbox_inches="tight")
+
+#%%
+all_df.groupby("reading_year").sum().num_pages.sort_index().plot(kind="bar")
+plt.title(
+    "Number of pages read, split by reading year,"
+    "\nof books read in the last 6ish years"
+)
+plt.ylabel("Pages read")
+plt.xlabel("Year")
+plt.savefig(f"out/reading_yearBarByPages", bbox_inches="tight")
+
+#%%
