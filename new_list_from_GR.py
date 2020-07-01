@@ -16,11 +16,11 @@ base = "https://www.goodreads.com"
 userID = 19575421
 
 
-
 #%%
-read_shelf = r.get(
-    f"{base}/review/list/19575421.xml?" f"key={key}&v=2" "&shelf=read" "&per_page=200"
+read_shelf_url = (
+    f"{base}/review/list/{userID}.xml?key={key}&v=2&shelf=read&per_page=200"
 )
+read_shelf = requests.get(read_shelf_url)
 xml_data = read_shelf.content
 read_books = xmltodict.parse(xml_data)
 rb = read_books["GoodreadsResponse"]["reviews"]["review"]
