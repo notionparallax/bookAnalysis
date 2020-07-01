@@ -16,16 +16,6 @@ base = "https://www.goodreads.com"
 userID = 19575421
 
 
-#%%
-me_r = r.get("{b}/user/show/19575421.xml?key={k}".format(b=base, k=key))
-xml_data = me_r.content
-me = xmltodict.parse(xml_data)
-
-# print(json.dumps(me, indent=2))
-shelves = me["GoodreadsResponse"]["user"]["user_shelves"]
-shelf = [x for x in shelves["user_shelf"] if x["name"] == "read"][0]
-shelf
-
 
 #%%
 read_shelf = r.get(
