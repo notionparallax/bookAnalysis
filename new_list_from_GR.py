@@ -28,7 +28,7 @@ books = pd.DataFrame(rb)
 
 
 #%%
-books.sample(4)
+books.sample(3)
 
 
 #%%
@@ -88,7 +88,7 @@ books["dt_added"] = books.apply(lambda row: parseDateSafe(row.date_added), axis=
 
 
 #%%
-books.sample(5)
+books.sample(3)
 
 
 #%%
