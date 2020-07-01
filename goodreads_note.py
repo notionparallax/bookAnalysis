@@ -1,12 +1,14 @@
 #%%
-from dateutil import parser
 import datetime
+from fractions import Fraction
 import json
 import math
-import matplotlib.pyplot as plt
 import os
+
+from dateutil import parser
+import matplotlib.pyplot as plt
 import pandas as pd
-import requests as r
+import requests
 import xmltodict
 
 # %%
@@ -265,8 +267,6 @@ os.listdir("out")
 
 
 # %%
-from fractions import Fraction
-
 fic_data = fic_data = all_df.groupby(["reading_year", "ficOrNonFic"]).size().unstack()
 fic_data["ratio"] = fic_data.apply(
     lambda x: Fraction((x.NonFiction / x.Fiction) / 2).limit_denominator(10), axis=1
