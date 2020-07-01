@@ -13,6 +13,7 @@ import xmltodict
 #%%
 key = "eQNqoldV2y2KH99ZOgqbQ"
 base = "https://www.goodreads.com"
+userID = 19575421
 
 
 #%%
