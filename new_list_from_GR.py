@@ -1,12 +1,13 @@
 #%%
-import requests as r
+import datetime
 import json
-import xmltodict
-import pandas as pd
+import math
+
 from dateutil import parser
 import matplotlib.pyplot as plt
-import datetime
-import math
+import pandas as pd
+import requests
+import xmltodict
 
 
 #%%
