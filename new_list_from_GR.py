@@ -10,12 +10,12 @@ import math
 
 
 #%%
-key = "eQNqoldV2y2KH99ZOgqbQ"
+key = "Da3OYyq578zwEyfahDXRA"
 base = "https://www.goodreads.com"
-
+usernum = "115850746"
 
 #%%
-me_r = r.get("{b}/user/show/19575421.xml?key={k}".format(b=base, k=key))
+me_r = requests.get("{b}/user/show/{u}.xml?key={k}".format(b=base, k=key, u=usernum))
 xml_data = me_r.content
 me = xmltodict.parse(xml_data)
 
@@ -25,9 +25,10 @@ shelf = [x for x in shelves["user_shelf"] if x["name"] == "read"][0]
 shelf
 
 
-#%%
+6#%%
 read_shelf = r.get(
-    f"{base}/review/list/19575421.xml?" f"key={key}&v=2" "&shelf=read" "&per_page=200"
+    f"{base}/review/list/{usernum}.xml?" 
+    f"key={key}&v=2" "&shelf=read" "&per_page=200"
 )
 xml_data = read_shelf.content
 read_books = xmltodict.parse(xml_data)
