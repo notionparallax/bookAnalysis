@@ -1,35 +1,26 @@
 #%%
-import requests as r
+import datetime
 import json
-import xmltodict
-import pandas as pd
+import math
+
 from dateutil import parser
 import matplotlib.pyplot as plt
-import datetime
-import math
+import pandas as pd
+import requests
+import xmltodict
 
 
 #%%
 key = "Da3OYyq578zwEyfahDXRA"
 base = "https://www.goodreads.com"
-usernum = "115850746"
+userID = "115850746"
+
 
 #%%
-me_r = requests.get("{b}/user/show/{u}.xml?key={k}".format(b=base, k=key, u=usernum))
-xml_data = me_r.content
-me = xmltodict.parse(xml_data)
-
-# print(json.dumps(me, indent=2))
-shelves = me["GoodreadsResponse"]["user"]["user_shelves"]
-shelf = [x for x in shelves["user_shelf"] if x["name"] == "read"][0]
-shelf
-
-
-6#%%
-read_shelf = r.get(
-    f"{base}/review/list/{usernum}.xml?" 
-    f"key={key}&v=2" "&shelf=read" "&per_page=200"
+read_shelf_url = (
+    f"{base}/review/list/{userID}.xml?key={key}&v=2&shelf=read&per_page=200"
 )
+read_shelf = requests.get(read_shelf_url)
 xml_data = read_shelf.content
 read_books = xmltodict.parse(xml_data)
 rb = read_books["GoodreadsResponse"]["reviews"]["review"]
@@ -37,7 +28,7 @@ books = pd.DataFrame(rb)
 
 
 #%%
-books.sample(4)
+books.sample(3)
 
 
 #%%
@@ -97,7 +88,7 @@ books["dt_added"] = books.apply(lambda row: parseDateSafe(row.date_added), axis=
 
 
 #%%
-books.sample(5)
+books.sample(3)
 
 
 #%%
