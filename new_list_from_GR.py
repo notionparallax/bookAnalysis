@@ -16,12 +16,13 @@ usernum = "115850746"
 
 #%%
 me_r = ("{b}/user/show/{u}.xml?key={k}".format(b=base, k=key, u=usernum))
+content = Requests.get(url)
 xml_data = me_r.content
 me = xmltodict.parse(xml_data)
 
 # print(json.dumps(me, indent=2))
 shelves = me["GoodreadsResponse"]["user"]["user_shelves"]
-shelf = [x for x in shelves["user_shelf"] if x["name"] == "read"][0]
+shelf = [x for x in shelves["user_shelf"] if x["name"] == ["read"][0]]
 shelf
 
 
