@@ -9,19 +9,20 @@ import datetime
 import math
 
 
-#%% 
+#%%
 key = "Da3OYyq578zwEyfahDXRA"
 base = "https://www.goodreads.com"
 usernum = "115850746"
 
 #%%
-me_r = request.get("{b}/user/show/{u}.xml?key={k}".format(b=base, k=key, u=usernum))
-xml_data = me_r.content
-me = xmltodict.parse(xml_data) ## Parse the given XML input and convert it into a dictionary. Parse is opposite of format
+me_r = ("{b}/user/show/{u}.xml?key={k}".format(b=base, k=key, u=usernum)) ## format puts variables into the curly brackets
+xml_data = me_r.content ## Extensible Markup Language (XML) is a markup language that defines a set of rules for encoding documents in a format that is both human-readable and machine-readable.
+##content has no 
+me = xmltodict.parse(xml_data)
 
 # print(json.dumps(me, indent=2))
-shelves = me["GoodreadsResponse"]["user"]["user_shelves"] ##retrieving something from a list
-shelf = [x for x in shelves["user_shelf"] if x["name"] == "read"][0] 
+shelves = me["GoodreadsResponse"]["user"]["user_shelves"]
+shelf = [x for x in shelves["user_shelf"] if x["name"] == "read"][0]
 shelf
 
 
