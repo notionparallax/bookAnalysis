@@ -15,9 +15,12 @@ base = "https://www.goodreads.com"
 usernum = "115850746"
 
 #%%
-me_r = ("{b}/user/show/{u}.xml?key={k}".format(b=base, k=key, u=usernum))
-content = Requests.get(url)
-xml_data = me_r.content
+url = f"{base}/user/show/{usernum}.xml?key={key}"
+print(url)
+
+#%%
+response = r.get(url) 
+xml_data = response.content
 me = xmltodict.parse(xml_data)
 
 # print(json.dumps(me, indent=2))
@@ -26,7 +29,7 @@ shelf = [x for x in shelves["user_shelf"] if x["name"] == ["read"][0]]
 shelf
 
 
-6#%%
+#%%
 read_shelf = r.get(
     f"{base}/review/list/{usernum}.xml?" 
     f"key={key}&v=2" "&shelf=read" "&per_page=200"
@@ -61,12 +64,13 @@ books.drop(
         "owned",
     ],
     axis=1,
+    errors="ignore",
     inplace=True,
 )
 
 
 #%%
-dead_date = parser.parse("2017 12 01 00:00:00 -0800")
+dead_date = parser.parse("2020 05 01 00:00:00 -0800")
 
 
 def parseDateSafe(date):
@@ -126,7 +130,7 @@ for index, row in books.iterrows():
 
 
 fig.autofmt_xdate()
-ax.set_xlim([datetime.date(2016, 1, 1), datetime.date(2020, 1, 1)])
+ax.set_xlim([datetime.date(2020, 5, 1), datetime.date(2020, 8, 1)])
 
 plt.show()
 
@@ -145,33 +149,45 @@ print("<table>\n", "\n".join(books.html_link), "\n</table>")
 
 # %%
 books.to_csv("raw_books.csv")
+tb = books
+def get_publication_year(row):
+    try:
+        if row["publication_year"]:
+            return row["publication_year"]
+        elif row.book:
+            if row.book["publication_year"]:
+                return int(row.book["publication_year"])
+            elif row.book["published"]:
+                return int(row.book["published"])
+            else:
+                return 0
+        else:
+            return 0
+    except Exception as e:
+        print(e, row, "\n")
 
-# def get_publication_year(row):
-#     try:
-#         if row["publication_year"]:
-#             return row["publication_year"]
-#         elif row.book_data:
-#             if row.book_data["publication_year"]:
-#                 return int(row.book_data["publication_year"])
-#             elif row.book_data["published"]:
-#                 return int(row.book_data["published"])
-#             else:
-#                 return 0
-#         else:
-#             return 0
-#     except Exception as e:
-#         print(e, row, "\n")
 
+def get_num_pages(row):
+    try:
+        if row["num_pages"] or row.book["num_pages"]:
+            return int(row.book["num_pages"])
+    except:
+        return 0
 
-# def get_num_pages(row):
-#     try:
-#         if row["num_pages"] or row.book_data["num_pages"]:
-#             return int(row.book_data["num_pages"])
-#     except:
-#         return 0
+tb["publication_year"] = tb.apply(get_publication_year, axis=1)
+tb["num_pages"] = tb.apply(get_num_pages, axis=1)
+tb["format"] = tb.apply(lambda x: x.book["format"], axis=1)
+tb["publisher"] = tb.apply(lambda x: x.book["publisher"], axis=1)
+tb["ficOrNonFic"] = "unknown"
+tb.to_excel("modified_books.xlsx")
+# ctrl+/ to add and remove #
 
-# tb["publication_year"] = tb.apply(get_publication_year, axis=1)
-# tb["num_pages"] = tb.apply(get_num_pages, axis=1)
-# tb["format"] = tb.apply(lambda x: x.book_data["format"], axis=1)
-# tb["publisher"] = tb.apply(lambda x: x.book_data["publisher"], axis=1)
-# tb.to_excel("modified_books.xlsx")
+# %%
+authors = pd.DataFrame(tb.book)
+def get_author_name(od):
+    return od.get("authors")["author"]["name"]
+    
+authors["name"] = authors.book.apply(get_author_name)
+authors.head()
+tb.to_excel("temp_authors.xlsx")
+# %%

@@ -43,13 +43,12 @@ fig.autofmt_xdate()
 ax.set_xlim([datetime.date(2013, 1, 1), datetime.date(2021, 1, 1)])
 plt.tick_params(axis="y", which="both", left=False, right=False, labelleft=False)
 plt.grid(True)
-plt.title("Books that Ben has read")
+plt.title("Books that Claire has read")
 plt.savefig(f"out/bookWaterfall", bbox_inches="tight")
 plt.savefig(f"out/bookWaterfall.pdf", bbox_inches="tight")
 #%%
 cols_to_drop = [
     "Unnamed: 0",
-    "book",
     "started_at",
     "read_at",
     "date_added",
@@ -62,7 +61,7 @@ for c in cols_to_drop:
     except Exception as e:
         print(e)
 try:
-    tb["book_data"] = tb.apply(
+    tb["book"] = tb.apply(
         lambda x: eval(x.book.replace("OrderedDict", "dict")), axis=1
     )
 except:
@@ -76,7 +75,7 @@ def dataise(d):
         return d
 
 
-tb.book_data = tb.book_data.apply(dataise)
+tb.book = tb.book.apply(dataise)
 tb.head()
 #%%
 plt.rcParams["figure.figsize"] = (8, 8)
@@ -86,13 +85,13 @@ print(
 )
 #%%
 tb.publication_year.value_counts().sort_index().plot(kind="bar")
-plt.title("Publication year of books read in the last 6ish years")
+plt.title("Publication year of books read in the last 6 years")
 plt.ylabel("Count of books")
 plt.xlabel("Year")
 plt.savefig(f"out/publicationYearBar", bbox_inches="tight")
 #%%
 tb.publication_year.hist(bins=50)
-plt.title("Publication year of books read in the last 6ish years")
+plt.title("Publication year of books read in the last 6 years")
 plt.ylabel("Count of books")
 plt.xlabel("Year")
 plt.savefig(f"out/publicationYearHist", bbox_inches="tight")
@@ -137,7 +136,7 @@ plt.savefig(f"out/rating", bbox_inches="tight")
 #%%
 all_authors = []
 for index, row in tb.iterrows():
-    all_authors.append(row.book_data["authors"]["author"])
+    all_authors.append(row.book["authors"]["author"])
 authors_df = pd.DataFrame(all_authors)
 authors_df.drop_duplicates(subset="name", inplace=True)
 authors_df.reset_index(drop=True, inplace=True)

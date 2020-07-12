@@ -38,7 +38,10 @@ read_shelf = r.get(
 xml_data = read_shelf.content
 read_books = xmltodict.parse(xml_data)
 rb = read_books["GoodreadsResponse"]["reviews"]["review"]
-books = pd.DataFrame(rb)
+books = pd.DataFrame(rb) ## pd --> pandas
+## pandas.DataFrame is two-dimensional size-mutable, potentially heterogeneous tabular data structure with labeled axes (rows and columns).
+A Data frame is a two-dimensional data structure in a tabular fashion in rows and columns.
+Basically creates a table using "rb"
 
 
 #%%
@@ -71,21 +74,26 @@ books.drop(
 
 #%%
 dead_date = parser.parse("2017 12 01 00:00:00 -0800")
+##parser offers a generic date/time string parser which is able to parse most known formats to represent a date and/or time. 
 
 
 def parseDateSafe(date):
     try:
         if (type(date) is str) and (date is not None):
+        ## If a single object is passed to type(), the function returns its type.
             if type(date) is datetime.datetime:
+            ## datetime.datetime is a combination of a date and a time. Attributes: year, month, day, hour, minute, second, microsecond, and tzinfo.
                 return date
             else:
-                return parser.parse(date).date()
+                return parser.parse(date).date() 
+                ## This module offers a generic date/time string parser which is able to parse most known formats to represent a date and/or time.
         else:
             return dead_date.date()
     except Exception as e:
         print(date, e)
         return date
-
+## datetime.date Class
+You can instantiate date objects from the date class. A date object represents a date (year, month and day)
 
 #%%
 books["title"] = books.apply(lambda row: row.book["title_without_series"], axis=1)
