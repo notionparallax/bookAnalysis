@@ -12,18 +12,30 @@ import requests
 import xmltodict
 
 # %%
-tb = pd.read_excel("modified_books.xlsx")
-
+tb = pd.read_excel(
+    "combined_book_data.xlsx", 
+    sheet_name="combined", 
+    parse_dates=['started_at', 'read_at', 'date_added', 'date_updated']
+    )
 tb.sort_values(by="dt_started_at", ascending=False, inplace=True)
 tb.reset_index(drop=True, inplace=True)
 #%%
+tb.head()
+#%%
+tb.dtypes
+#%%
+converted_start = tb["started_at"]
+pd.to_datetime(converted_start, unit )
+
+#%%
 plt.rcParams["figure.figsize"] = (8.27, 11.69)
 fig, ax = plt.subplots()
+
 for index, row in tb.iterrows():
     marker = "-"
 
     ax.plot_date(
-        [row.dt_started_at, row.dt_read_at],
+        [row.started_at, row.read_at],
         [index, index],
         fmt=marker,
         tz=None,
@@ -31,21 +43,21 @@ for index, row in tb.iterrows():
         ydate=False,
         lw=2.5,
     )
-    ax.text(
-        row.dt_started_at,
-        index,
-        f"{row.author_1_name}: {row.title}",
-        fontsize=1.5,
-        verticalalignment="center",
-    )
+    # ax.text(
+    #     row.started_at,
+    #     index,
+    #     f"{row.author_1_name}: {row.title}",
+    #     fontsize=1.5,
+    #     verticalalignment="center",
+    # )
 
 fig.autofmt_xdate()
-ax.set_xlim([datetime.date(2013, 1, 1), datetime.date(2021, 1, 1)])
+ax.set_xlim([datetime.date(2020, 1, 1), datetime.date(2020, 8, 1)])
 plt.tick_params(axis="y", which="both", left=False, right=False, labelleft=False)
 plt.grid(True)
 plt.title("Books that Claire has read")
-plt.savefig(f"out/bookWaterfall", bbox_inches="tight")
-plt.savefig(f"out/bookWaterfall.pdf", bbox_inches="tight")
+# plt.savefig(f"out/bookWaterfall", bbox_inches="tight")
+# plt.savefig(f"out/bookWaterfall.pdf", bbox_inches="tight")
 #%%
 cols_to_drop = [
     "Unnamed: 0",
@@ -154,6 +166,9 @@ for c in cols_to_drop:
 authors_df.head()
 #%%
 authors_df.average_rating.hist()
+plt.title("Average Rating of Books")
+plt.ylabel("Amount of books")
+plt.xlabel("Rating")
 
 # %%
 authors_df.ratings_count.hist()
