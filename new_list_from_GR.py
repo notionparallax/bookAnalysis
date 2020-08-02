@@ -79,7 +79,11 @@ def parseDateSafe(date):
             if type(date) is datetime.datetime:
                 return date
             else:
-                return parser.parse(date).date()
+                good_date = parser.parse(date).date() 
+                if good_date>0:
+                    return parser.parse(date).date()
+                else:
+                    return dead_date.date()
         else:
             return dead_date.date()
     except Exception as e:
@@ -105,34 +109,34 @@ books["dt_added"] = books.apply(lambda row: parseDateSafe(row.date_added), axis=
 books.sample(5)
 
 
-#%%
-fig, ax = plt.subplots()
-badRows = []
+# #%%
+# fig, ax = plt.subplots()
+# badRows = []
 
-for index, row in books.iterrows():
-    marker = "x"
-    if (row.dt_started_at != dead_date) and (row.dt_read_at != dead_date):
-        marker = "-"
-        ax.plot_date(
-            [row.dt_started_at, row.dt_read_at],
-            [index, index],
-            fmt=marker,
-            tz=None,
-            xdate=True,
-            ydate=False,
-        )
-        ax.text(
-            row.dt_started_at, index, row.title, fontsize=1, verticalalignment="center"
-        )
+# for index, row in books.iterrows():
+#     marker = "x"
+#     if (row.dt_started_at != dead_date) and (row.dt_read_at != dead_date):
+#         marker = "-"
+#         ax.plot_date(
+#             [row.dt_started_at, row.dt_read_at],
+#             [index, index],
+#             fmt=marker,
+#             tz=None,
+#             xdate=True,
+#             ydate=False,
+#         )
+#         ax.text(
+#             row.dt_started_at, index, row.title, fontsize=1, verticalalignment="center"
+#         )
 
-    else:
-        badRows.append(row)
+#     else:
+#         badRows.append(row)
 
 
-fig.autofmt_xdate()
-ax.set_xlim([datetime.date(2020, 5, 1), datetime.date(2020, 8, 1)])
+# fig.autofmt_xdate()
+# ax.set_xlim([datetime.date(2010, 5, 1), datetime.date(2020, 8, 1)])
 
-plt.show()
+# plt.show()
 
 #%%
 br = pd.DataFrame(badRows)
@@ -178,6 +182,7 @@ tb["publication_year"] = tb.apply(get_publication_year, axis=1)
 tb["num_pages"] = tb.apply(get_num_pages, axis=1)
 tb["format"] = tb.apply(lambda x: x.book["format"], axis=1)
 tb["publisher"] = tb.apply(lambda x: x.book["publisher"], axis=1)
+tb["isbn13"] = tb.apply(lambda x: x.book["isbn13"], axis=1)
 tb["ficOrNonFic"] = "unknown"
 tb.to_excel("modified_books.xlsx")
 # ctrl+/ to add and remove #
@@ -188,6 +193,8 @@ def get_author_name(od):
     return od.get("authors")["author"]["name"]
     
 authors["name"] = authors.book.apply(get_author_name)
+
+authors.drop_duplicates(subset="name", inplace=True)
 authors.head()
-tb.to_excel("temp_authors.xlsx")
+authors.to_excel("temp_authors.xlsx")
 # %%
