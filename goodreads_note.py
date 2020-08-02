@@ -24,8 +24,11 @@ tb.head()
 #%%
 tb.dtypes
 #%%
-converted_start = tb["started_at"]
-pd.to_datetime(converted_start, unit )
+tb["started_at"] = pd.to_datetime(tb["started_at"])
+tb["started_at"]
+#%%
+tb["read_at"] = pd.to_datetime(tb["read_at"])
+tb["read_at"]
 
 #%%
 plt.rcParams["figure.figsize"] = (8.27, 11.69)
@@ -43,19 +46,51 @@ for index, row in tb.iterrows():
         ydate=False,
         lw=2.5,
     )
-    # ax.text(
-    #     row.started_at,
-    #     index,
-    #     f"{row.author_1_name}: {row.title}",
-    #     fontsize=1.5,
-    #     verticalalignment="center",
-    # )
+    
+    ax.text(
+        row.started_at,
+        index,
+        f"{row.title}",
+        fontsize=1.5,
+        verticalalignment="center",
+    )
 
 fig.autofmt_xdate()
 ax.set_xlim([datetime.date(2020, 1, 1), datetime.date(2020, 8, 1)])
 plt.tick_params(axis="y", which="both", left=False, right=False, labelleft=False)
 plt.grid(True)
-plt.title("Books that Claire has read")
+plt.title("Books and Duration of 2020")
+# plt.savefig(f"out/bookWaterfall", bbox_inches="tight")
+# plt.savefig(f"out/bookWaterfall.pdf", bbox_inches="tight")
+#%%
+plt.rcParams["figure.figsize"] = (8.27, 11.69)
+fig, ax = plt.subplots()
+
+for index, row in tb.iterrows():
+    marker = "-"
+
+    ax.plot_date(
+        [row.started_at, row.read_at],
+        [index, index],
+        fmt=marker,
+        tz=None,
+        xdate=True,
+        ydate=False,
+        lw=2.5,
+    )
+    ax.text(
+        row.started_at,
+        index,
+        f"{row.title}",
+        fontsize=1.5,
+        verticalalignment="center",
+    )
+
+fig.autofmt_xdate()
+ax.set_xlim([datetime.date(2012, 1, 1), datetime.date(2020, 8, 1)])
+plt.tick_params(axis="y", which="both", left=False, right=False, labelleft=False)
+plt.grid(True)
+plt.title("Books and Duration Since 2012")
 # plt.savefig(f"out/bookWaterfall", bbox_inches="tight")
 # plt.savefig(f"out/bookWaterfall.pdf", bbox_inches="tight")
 #%%
@@ -133,18 +168,35 @@ plt.title("Publisher - very unfinished")
 plt.xlabel("Count of books")
 plt.ylabel("Publisher of book")
 plt.savefig(f"out/publisher", bbox_inches="tight")
-#%%
-tb.author_1_name.value_counts()[:30].plot.barh()
-plt.title("First named author, top 30")
-plt.xlabel("Count of books")
-plt.ylabel("Name of first-listed author")
-plt.savefig(f"out/author_top_30", bbox_inches="tight")
+
 #%%
 tb.rating.hist(bins=4)
 plt.title("My rating")
 plt.ylabel("Count of books")
 plt.xlabel("What I've rated this book")
 plt.savefig(f"out/rating", bbox_inches="tight")
+
+#%%
+tb.ficOrNonFic.value_counts().plot(kind="bar", rot=20)
+plt.title("Fiction vs Non-Fiction")
+plt.ylabel("Count of Books")
+plt.xlabel("Type of Book")
+plt.savefig(f"out/ficnonfic", bbox_inches="tight")
+
+#%%
+tb.SeriesOrStandalone.value_counts().plot(kind="bar", rot=20)
+plt.title("Series vs Stand-Alone")
+plt.ylabel("Count of Books")
+plt.xlabel("Type of Book")
+plt.savefig(f"out/seriesstandalone", bbox_inches="tight")
+
+#%%
+tb.LGBTQIA_Characters.value_counts().plot(kind="bar", rot=20)
+plt.title("LGBTQIA Characters in Books")
+plt.ylabel("Count of Books")
+plt.xlabel("Type of Book")
+plt.savefig(f"out/seriesstandalone", bbox_inches="tight")
+
 #%%
 all_authors = []
 for index, row in tb.iterrows():
@@ -152,28 +204,20 @@ for index, row in tb.iterrows():
 authors_df = pd.DataFrame(all_authors)
 authors_df.drop_duplicates(subset="name", inplace=True)
 authors_df.reset_index(drop=True, inplace=True)
-authors_df["image"] = authors_df.apply(lambda x: x.image_url["#text"], axis=1)
 authors_df.average_rating = authors_df.average_rating.apply(float)
-authors_df.ratings_count = authors_df.ratings_count.apply(int)
-authors_df.text_reviews_count = authors_df.text_reviews_count.apply(int)
 cols_to_drop = ["image_url", "role", "small_image_url"]
 for c in cols_to_drop:
     try:
         authors_df.drop(c, axis=1, inplace=True)
     except Exception as e:
         print(e)
-# authors_df.to_excel("authors.xlsx")
+authors_df.to_excel("temp_authors.xlsx")
 authors_df.head()
 #%%
 authors_df.average_rating.hist()
 plt.title("Average Rating of Books")
 plt.ylabel("Amount of books")
 plt.xlabel("Rating")
-
-# %%
-authors_df.ratings_count.hist()
-#%%
-authors_df.text_reviews_count.hist()
 
 #%%
 """
@@ -187,10 +231,10 @@ Hispanic or Latino. A person of Cuban, Mexican, Puerto Rican, South or Central A
 Native Hawaiian or Other Pacific Islander. A person having origins in any of the original peoples of Hawaii, Guam, Samoa, or other Pacific Islands.
 White.
 """
-authors_df = pd.read_excel("authors.xlsx")
+authors_df = pd.read_excel("Combined_Authors.xlsx")
 authors_df.head()
 #%%
-authors_df.sexygendery.value_counts().plot(kind="bar", rot=0)
+authors_df.gender.value_counts().plot(kind="bar", rot=0)
 plt.title("Gender of unique first authors")
 plt.ylabel("Count of authors")
 plt.xlabel("The gender I've guessed")
@@ -201,23 +245,49 @@ plt.title("Ethnicity of unique first authors")
 plt.ylabel("Count of authors")
 plt.xlabel("The ethnicity I've guessed")
 plt.savefig(f"out/first_author_ethnicity", bbox_inches="tight")
+
+#%%
+authors_df.Nationality.value_counts()[:30].plot.barh()
+plt.title("Nationality of unique first authors")
+plt.ylabel("Count of authors")
+plt.xlabel("The Nationality I've guessed")
+plt.savefig(f"out/first_author_nationality", bbox_inches="tight")
+
+#%%
+authors_df.LGBTQI_Authors.value_counts().plot(kind="bar", rot=0)
+plt.title("Sexuality of unique first authors")
+plt.ylabel("Count of authors")
+plt.xlabel("The Sexuality I've guessed")
+plt.savefig(f"out/first_author_sexuality", bbox_inches="tight")
+
 #%%
 authors_df["compound_diversity"] = authors_df.apply(
-    lambda x: f"{x.ethnicity}-{x.sexygendery}", axis=1
+    lambda x: f"{x.ethnicity}-{x.gender}", axis=1
 )
 authors_df.compound_diversity.value_counts().plot(kind="bar")
 plt.title('"Compound" diversity of unique first authors')
 plt.ylabel("Count of authors")
 plt.xlabel("joined together")
 plt.savefig(f"out/compundDiversity", bbox_inches="tight")
+
+#%%
+authors_df["compound_sexuality"] = authors_df.apply(
+    lambda x: f"{x.gender}-{x.LGBTQI_Authors}", axis=1
+)
+authors_df.compound_sexuality.value_counts().plot(kind="bar")
+plt.title('"Compound" Sexuality of unique first authors')
+plt.ylabel("Count of authors")
+plt.xlabel("joined together")
+plt.savefig(f"out/compundSexuality", bbox_inches="tight")
+
 #%%
 all_df = tb.merge(authors_df, right_on="name", left_on="author_1_name")
 all_df.sample(4)
 #%%
-all_df.sexygendery.value_counts().plot(kind="bar", rot=0)
+all_df.gender.value_counts().plot(kind="bar", rot=0)
 plt.title("Books read, split by Gender of unique first author")
 plt.ylabel("Count of books")
-plt.xlabel("The gender I've guessed")
+plt.xlabel("Gender")
 plt.savefig(f"out/gender_of_books_read", bbox_inches="tight")
 #%%
 all_df.ethnicity.value_counts().plot(kind="bar", rot=0)
@@ -226,7 +296,10 @@ plt.ylabel("Count of books")
 plt.xlabel("The ethnicity I've guessed")
 plt.savefig(f"out/Ethnicity_of_books_read", bbox_inches="tight")
 #%%
-all_df["reading_year"] = all_df.dt_started_at.apply(lambda x: x.year)
+tb["started_at"] = pd.to_datetime(tb["started_at"])
+tb["started_at"]
+#%%
+all_df["reading_year"] = all_df.started_at.apply(lambda x: x.year)
 #%%
 # from : https://stackoverflow.com/a/34919066/1835727
 diversity_data = all_df.groupby(["reading_year", "compound_diversity"]).size().unstack()
@@ -356,7 +429,7 @@ plt.ylabel("pages")
 plt.xlabel("Somewhat arbitrary Buckets")
 plt.savefig(f"out/compound_diversityAvePages", bbox_inches="tight")
 # %%
-(all_df.groupby("sexygendery").mean().num_pages.plot(kind="bar", stacked=True, rot=20))
+(all_df.groupby("gender").mean().num_pages.plot(kind="bar", stacked=True, rot=20))
 plt.title("Mean number of pages per book by [guessed] gender")
 plt.ylabel("pages")
 plt.xlabel("Somewhat arbitrary Buckets")
