@@ -70,7 +70,7 @@ books.drop(
 
 
 #%%
-dead_date = parser.parse("2020 04 01 00:00:00 -0800")
+dead_date = parser.parse("1970 01 01 00:00:00 -0800")
 
 
 def parseDateSafe(date):

@@ -19,6 +19,7 @@ tb = pd.read_excel(
     )
 tb.sort_values(by="dt_started_at", ascending=False, inplace=True)
 tb.reset_index(drop=True, inplace=True)
+
 #%%
 tb.head()
 #%%
@@ -36,27 +37,27 @@ fig, ax = plt.subplots()
 
 for index, row in tb.iterrows():
     marker = "-"
-
-    ax.plot_date(
-        [row.started_at, row.read_at],
-        [index, index],
-        fmt=marker,
-        tz=None,
-        xdate=True,
-        ydate=False,
-        lw=2.5,
-    )
-    
-    ax.text(
-        row.started_at,
-        index,
-        f"{row.title}",
-        fontsize=1.5,
-        verticalalignment="center",
-    )
+    if True: #TODO
+        ax.plot_date(
+            [row.started_at, row.read_at],
+            [index, index],
+            fmt=marker,
+            tz=None,
+            xdate=True,
+            ydate=False,
+            lw=2.5,
+        )
+        
+        ax.text(
+            row.started_at,
+            index,
+            f"{row.title}",
+            fontsize=1.5,
+            verticalalignment="center",
+        )
 
 fig.autofmt_xdate()
-ax.set_xlim([datetime.date(2020, 1, 1), datetime.date(2020, 8, 1)])
+ax.set_xlim([datetime.date(2019, 1, 1), datetime.date(2020, 8, 1)])
 plt.tick_params(axis="y", which="both", left=False, right=False, labelleft=False)
 plt.grid(True)
 plt.title("Books and Duration of 2020")
@@ -96,7 +97,7 @@ plt.title("Books and Duration Since 2012")
 #%%
 cols_to_drop = [
     "Unnamed: 0",
-    "started_at",
+    # "started_at",
     "read_at",
     "date_added",
     "date_updated",
@@ -295,9 +296,7 @@ plt.title("Ethnicity of unique first authors")
 plt.ylabel("Count of books")
 plt.xlabel("The ethnicity I've guessed")
 plt.savefig(f"out/Ethnicity_of_books_read", bbox_inches="tight")
-#%%
-tb["started_at"] = pd.to_datetime(tb["started_at"])
-tb["started_at"]
+
 #%%
 all_df["reading_year"] = all_df.started_at.apply(lambda x: x.year)
 #%%
@@ -306,12 +305,11 @@ diversity_data = all_df.groupby(["reading_year", "compound_diversity"]).size().u
 #%%
 diversity_data = diversity_data[
     [
-        "Asian-Woman",
-        "Black-Woman",
-        "White-Woman",
-        "Asian-Man",  #
-        "Black-Man",
-        "White-Man",
+        "Asian-Female",
+        "Black-Male",
+        "White-Female",
+        "Asian-Male",
+        "White-Male",
     ]
 ]
 diversity_data.plot(kind="bar", stacked=True, rot=0)
