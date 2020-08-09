@@ -17,7 +17,7 @@ tb = pd.read_excel(
     sheet_name="combined", 
     parse_dates=['started_at', 'read_at', 'date_added', 'date_updated']
     )
-tb.sort_values(by="dt_started_at", ascending=False, inplace=True)
+tb.sort_values(by="started_at", ascending=False, inplace=True)
 tb.reset_index(drop=True, inplace=True)
 
 #%%
@@ -30,46 +30,56 @@ tb["started_at"]
 #%%
 tb["read_at"] = pd.to_datetime(tb["read_at"])
 tb["read_at"]
+#%%
+tb_dates = tb.set_index('started_at')
+tb_dates.head(3)
+#%%
+tb_dates.index
+#%%
+tb_dates['Year'] = tb_dates.index.year
+tb_dates['Month'] = tb_dates.index.month
+tb_dates.head(3)
+#%%
+date_start_range = tb[tb["started_at"].between('2012-01-01', '2020-12-31')]
+known_start = date_start_range['started_at']
+date_end_range = tb[tb["read_at"].between('2012-01-01', '2020-12-31')]
+known_end = date_end_range['read_at']
+# #%%
+# plt.rcParams["figure.figsize"] = (8.27, 11.69)
+# fig, ax = plt.subplots()
+# marker = "-"
+# for index, row in tb.iterrows():        
+#     ax.plot_date(
+#         [known_start, known_end],
+#         [index, index],
+#         fmt=marker,
+#         tz=None,
+#         xdate=True,
+#         ydate=False,
+#         lw=2.5,
+#     )
+            
+#     ax.text(
+#         known_start,
+#         index,
+#         f"{row.title}",
+#         fontsize=1.5,
+#         verticalalignment="center",
+#     )
 
+# fig.autofmt_xdate()
+# ax.set_xlim([datetime.date(2019, 1, 1), datetime.date(2020, 8, 1)])
+# plt.tick_params(axis="y", which="both", left=False, right=False, labelleft=False)
+# plt.grid(True)
+# plt.title("Books and Duration of 2020")
+# # plt.savefig(f"out/bookWaterfall", bbox_inches="tight")
+# # plt.savefig(f"out/bookWaterfall.pdf", bbox_inches="tight")
 #%%
 plt.rcParams["figure.figsize"] = (8.27, 11.69)
 fig, ax = plt.subplots()
 
 for index, row in tb.iterrows():
     marker = "-"
-    if True: #TODO
-        ax.plot_date(
-            [row.started_at, row.read_at],
-            [index, index],
-            fmt=marker,
-            tz=None,
-            xdate=True,
-            ydate=False,
-            lw=2.5,
-        )
-        
-        ax.text(
-            row.started_at,
-            index,
-            f"{row.title}",
-            fontsize=1.5,
-            verticalalignment="center",
-        )
-
-fig.autofmt_xdate()
-ax.set_xlim([datetime.date(2019, 1, 1), datetime.date(2020, 8, 1)])
-plt.tick_params(axis="y", which="both", left=False, right=False, labelleft=False)
-plt.grid(True)
-plt.title("Books and Duration of 2020")
-# plt.savefig(f"out/bookWaterfall", bbox_inches="tight")
-# plt.savefig(f"out/bookWaterfall.pdf", bbox_inches="tight")
-#%%
-plt.rcParams["figure.figsize"] = (8.27, 11.69)
-fig, ax = plt.subplots()
-
-for index, row in tb.iterrows():
-    marker = "-"
-
     ax.plot_date(
         [row.started_at, row.read_at],
         [index, index],
@@ -131,6 +141,12 @@ plt.rcParams["figure.figsize"] = (8, 8)
 print(
     f"Median year: {int(tb.publication_year.median())}, mean year: {int(tb.publication_year.mean())}"
 )
+#%%
+tb_dates.Month.value_counts().sort_index().plot(kind="bar")
+plt.title("Books Read During Each Month")
+plt.ylabel("Count of books")
+plt.xlabel("Month")
+plt.savefig(f"out/publicationYearBar", bbox_inches="tight")
 #%%
 tb.publication_year.value_counts().sort_index().plot(kind="bar")
 plt.title("Publication year of books read in the last 6 years")
@@ -351,12 +367,12 @@ plt.savefig(f"out/compound_diversity_Fic_Nonfic", bbox_inches="tight")
 os.listdir("out")
 
 
-# %%
-fic_data = fic_data = all_df.groupby(["reading_year", "ficOrNonFic"]).size().unstack()
-fic_data["ratio"] = fic_data.apply(
-    lambda x: Fraction((x.NonFiction / x.Fiction) / 2).limit_denominator(10), axis=1
-)
-fic_data.ratio
+# # %%
+# fic_data = fic_data = all_df.groupby(["reading_year", "ficOrNonFic"]).size().unstack()
+# fic_data["ratio"] = fic_data.apply(
+#     lambda x: Fraction((x.NonFiction / x.Fiction) / 2).limit_denominator(10), axis=1
+# )
+# fic_data.ratio
 
 
 # %%
@@ -432,16 +448,4 @@ plt.title("Mean number of pages per book by [guessed] gender")
 plt.ylabel("pages")
 plt.xlabel("Somewhat arbitrary Buckets")
 plt.savefig(f"out/sexygenderyAvePages", bbox_inches="tight")
-
-#%%
-hm = all_df[all_df.compound_diversity == "Hispanic-Man"].iloc[0]
-bm = all_df[all_df.compound_diversity == "Black-Man"].iloc[0]
-print(
-    f"Surprisingly&mdash;to me&mdash;it looks like I've only read one book by "
-    f"a black man in the last 6 years "
-    f"([{bm.title}]({bm.url}) by [{bm.author_1_name}]({bm.link})). "
-    "and one book by a Hispanic man "
-    f"([{hm.title}({hm.url}) by [{hm.author_1_name}]({hm.link})) "
-    "Perhaps some kind of more forceful intervention is needed?"
-)
 

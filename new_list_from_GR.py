@@ -109,7 +109,7 @@ books["dt_added"] = books.apply(lambda row: parseDateSafe(row.date_added), axis=
 books.sample(5)
 
 
-# #%%
+#%%
 # fig, ax = plt.subplots()
 # badRows = []
 
@@ -138,10 +138,10 @@ books.sample(5)
 
 # plt.show()
 
-#%%
-br = pd.DataFrame(badRows)
-print(br.shape)
-br.head()
+# #%%
+# br = pd.DataFrame(badRows)
+# print(br.shape)
+# br.head()
 
 #%%
 books["html_link"] = books.apply(
