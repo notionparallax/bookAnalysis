@@ -4,74 +4,70 @@ I started this project at the end of 2019 to look at my own reading. I [wrote it
 
 The repo is pretty dirty at the moment, but I'll clean it up soon. Get in touch if you want to do this for your own reading and I'll talk you through it.
 
-![](./out/Tina_bookWaterfall)
+![](./out/Tina_bookWaterfall.png)
 
-![](./out/Tina_bookWaterfall.pdf)
+![](./out/Tina_bookWaterfall2012.png)
 
-![](./out/Tina_bookWaterfall2012)
+![](./out/Tina_publicationYearBar.png)
 
-![](./out/Tina_bookWaterfall2012.pdf)
+![](./out/Tina_publicationYearBar.png)
 
-![](./out/Tina_publicationYearBar)
+![](./out/Tina_publicationYearHist.png)
 
-![](./out/Tina_publicationYearBar)
+![](./out/Tina_numPages.png)
 
-![](./out/Tina_publicationYearHist)
+![](./out/Tina_format.png)
 
-![](./out/Tina_numPages)
+![](./out/Tina_publisher.png)
 
-![](./out/Tina_format)
+![](./out/Tina_rating.png)
 
-![](./out/Tina_publisher)
+![](./out/Tina_ficnonfic.png)
 
-![](./out/Tina_rating)
+![](./out/Tina_seriesstandalone.png)
 
-![](./out/Tina_ficnonfic)
+![](./out/Tina_seriesstandalone.png)
 
-![](./out/Tina_seriesstandalone)
+![](./out/Tina_Gender_count_of_unique_first_authors.png)
 
-![](./out/Tina_seriesstandalone)
+![](./out/Tina_first_author_ethnicity.png)
 
-![](./out/Tina_Gender_count_of_unique_first_authors)
+![](./out/Tina_first_author_life.png)
 
-![](./out/Tina_first_author_ethnicity)
+![](./out/Tina_first_author_nationality.png)
 
-![](./out/Tina_first_author_life)
+![](./out/Tina_first_author_sexuality.png)
 
-![](./out/Tina_first_author_nationality)
+![](./out/Tina_compundDiversity.png)
 
-![](./out/Tina_first_author_sexuality)
+![](./out/Tina_compundSexuality.png)
 
-![](./out/Tina_compundDiversity)
+![](./out/Tina_compundSexuality.png)
 
-![](./out/Tina_compundSexuality)
+![](./out/Tina_gender_of_books_read.png)
 
-![](./out/Tina_compundSexuality)
+![](./out/Tina_Ethnicity_of_books_read.png)
 
-![](./out/Tina_gender_of_books_read)
+![](./out/Tina_clumsyDiversity.png)
 
-![](./out/Tina_Ethnicity_of_books_read)
+![](./out/Tina_anualFic_Nonfic.png)
 
-![](./out/Tina_clumsyDiversity)
+![](./out/Tina_anualFic_Nonfic.png)
 
-![](./out/Tina_anualFic_Nonfic)
+![](./out/Tina_anualFic_Nonfic.png)
 
-![](./out/Tina_anualFic_Nonfic)
+![](./out/Tina_compound_diversity_Fic_Nonfic.png)
 
-![](./out/Tina_anualFic_Nonfic)
+![](./out/Tina_compound_diversity_Fic_Nonfic.png)
 
-![](./out/Tina_compound_diversity_Fic_Nonfic)
+![](./out/Tina_publication_yearBarByPages.png)
 
-![](./out/Tina_compound_diversity_Fic_Nonfic)
+![](./out/Tina_formatBarByPages.png)
 
-![](./out/Tina_publication_yearBarByPages)
+![](./out/Tina_compound_diversity_Fic_Nonfic_byPages.png)
 
-![](./out/Tina_formatBarByPages)
+![](./out/Tina_reading_yearBarByPages.png)
 
-![](./out/Tina_compound_diversity_Fic_Nonfic_byPages)
+![](./out/Tina_compound_diversityAvePages.png)
 
-![](./out/Tina_reading_yearBarByPages)
-
-![](./out/Tina_compound_diversityAvePages)
-
-![](./out/Tina_sexygenderyAvePages)
+![](./out/Tina_sexygenderyAvePages.png)
