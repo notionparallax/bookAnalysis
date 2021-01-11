@@ -1,19 +1,12 @@
 #%%
 import datetime
-
-# from fractions import Fraction
-# import json
-# import math
 import os
 
-# from dateutil import parser
 import matplotlib.pyplot as plt
 import pandas as pd
 
-# import requests
-# import xmltodict
-
 #%%
+reader_name = "Tina"
 spreadsheet_link = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTydOTjne5NgpfLr0g-YMcYksNuvXOT_17Lbw0E6N-1NOFHG16_s9EN4xerK4KrmuG0Mv0q3xYFouuL/pub?output=xlsx"
 #%%
 tb = pd.read_excel(
@@ -69,8 +62,8 @@ for index, row in date_current_range.iterrows():
 fig.autofmt_xdate()
 plt.grid(True)
 plt.title("Books and Duration of 2020")
-plt.savefig(f"out/bookWaterfall", bbox_inches="tight")
-plt.savefig(f"out/bookWaterfall.pdf", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_bookWaterfall", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_bookWaterfall.pdf", bbox_inches="tight")
 #%%
 plt.rcParams["figure.figsize"] = (9, 6)
 fig, ax = plt.subplots()
@@ -95,8 +88,8 @@ ax.set_xlim([datetime.date(2012, 1, 1), datetime.date(2020, 8, 1)])
 plt.tick_params(axis="y", which="both", left=False, right=False, labelleft=False)
 plt.grid(True)
 plt.title("Books and Duration Since 2012")
-plt.savefig(f"out/bookWaterfall2012", bbox_inches="tight")
-plt.savefig(f"out/bookWaterfall2012.pdf", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_bookWaterfall2012", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_bookWaterfall2012.pdf", bbox_inches="tight")
 #%%
 cols_to_drop = ["Unnamed: 0", "read_at", "date_added", "date_updated", "html_link"]
 for c in cols_to_drop:
@@ -130,19 +123,19 @@ tb_dates.Month.value_counts().sort_index().plot(kind="bar")
 plt.title("Books Read During Each Month")
 plt.ylabel("Count of books")
 plt.xlabel("Month")
-plt.savefig(f"out/publicationYearBar", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_publicationYearBar", bbox_inches="tight")
 #%%
 tb.publication_year.value_counts().sort_index().plot(kind="bar")
 plt.title("Publication year of books read in the last 6 years")
 plt.ylabel("Count of books")
 plt.xlabel("Year")
-plt.savefig(f"out/publicationYearBar", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_publicationYearBar", bbox_inches="tight")
 #%%
 tb.publication_year.hist(bins=50)
 plt.title("Publication year of books read in the last 6 years")
 plt.ylabel("Count of books")
 plt.xlabel("Year")
-plt.savefig(f"out/publicationYearHist", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_publicationYearHist", bbox_inches="tight")
 
 # %%
 print(
@@ -153,7 +146,7 @@ tb.num_pages.hist(bins=45)
 plt.title("Number of pages in these books")
 plt.ylabel("Count of books")
 plt.xlabel("Number of pages")
-plt.savefig(f"out/numPages", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_numPages", bbox_inches="tight")
 
 #%%
 tb.format.value_counts().plot(kind="bar", rot=20)
@@ -162,41 +155,41 @@ plt.title(
 )
 plt.ylabel("Count of books")
 plt.xlabel("Format of book")
-plt.savefig(f"out/format", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_format", bbox_inches="tight")
 #%%
 tb.publisher.value_counts().plot.barh()
 plt.title("Publisher - very unfinished")
 plt.xlabel("Count of books")
 plt.ylabel("Publisher of book")
-plt.savefig(f"out/publisher", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_publisher", bbox_inches="tight")
 
 #%%
 tb.rating.hist(bins=4)
 plt.title("My rating")
 plt.ylabel("Count of books")
 plt.xlabel("What I've rated this book")
-plt.savefig(f"out/rating", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_rating", bbox_inches="tight")
 
 #%%
 tb.ficOrNonFic.value_counts().plot(kind="bar", rot=20)
 plt.title("Fiction vs Non-Fiction")
 plt.ylabel("Count of Books")
 plt.xlabel("Type of Book")
-plt.savefig(f"out/ficnonfic", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_ficnonfic", bbox_inches="tight")
 
 #%%
 tb.SeriesOrStandalone.value_counts().plot(kind="bar", rot=20)
 plt.title("Series vs Stand-Alone")
 plt.ylabel("Count of Books")
 plt.xlabel("Type of Book")
-plt.savefig(f"out/seriesstandalone", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_seriesstandalone", bbox_inches="tight")
 
 #%%
 tb.LGBTQIA_Characters.value_counts().plot(kind="bar", rot=20)
 plt.title("LGBTQIA Characters in Books")
 plt.ylabel("Count of Books")
 # plt.xlabel("Type of Book")
-plt.savefig(f"out/seriesstandalone", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_seriesstandalone", bbox_inches="tight")
 
 #%%
 # all_authors = []
@@ -253,34 +246,36 @@ authors_df.gender.value_counts().plot(kind="bar", rot=0)
 plt.title("Gender of unique first authors")
 plt.ylabel("Count of authors")
 plt.xlabel("The gender I've guessed")
-plt.savefig(f"out/Gender_count_of_unique_first_authors", bbox_inches="tight")
+plt.savefig(
+    f"out/{reader_name}_Gender_count_of_unique_first_authors", bbox_inches="tight"
+)
 #%%
 authors_df.ethnicity.value_counts().plot(kind="bar", rot=0)
 plt.title("Ethnicity of unique first authors")
 plt.ylabel("Count of authors")
 plt.xlabel("The ethnicity I've guessed")
-plt.savefig(f"out/first_author_ethnicity", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_first_author_ethnicity", bbox_inches="tight")
 
 #%%
 authors_df.DeadorAlive.value_counts().plot(kind="bar", rot=0)
 plt.title("Authors who are dead or alive")
 plt.ylabel("Count of authors")
 plt.xlabel("Dead or Alive")
-plt.savefig(f"out/first_author_life", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_first_author_life", bbox_inches="tight")
 
 #%%
 authors_df.Nationality.value_counts()[:30].plot.barh()
 plt.title("Nationality of unique first authors")
 plt.ylabel("Count of authors")
 plt.xlabel("The Nationality I've guessed")
-plt.savefig(f"out/first_author_nationality", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_first_author_nationality", bbox_inches="tight")
 
 #%%
 authors_df.LGBTQI_Authors.value_counts().plot(kind="bar", rot=0)
 plt.title("Sexuality of unique first authors")
 plt.ylabel("Count of authors")
 plt.xlabel("The Sexuality I've guessed")
-plt.savefig(f"out/first_author_sexuality", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_first_author_sexuality", bbox_inches="tight")
 
 #%%
 authors_df["compound_diversity"] = authors_df.apply(
@@ -290,7 +285,7 @@ authors_df.compound_diversity.value_counts().plot(kind="bar")
 plt.title('"Compound" diversity of unique first authors')
 plt.ylabel("Count of authors")
 plt.xlabel("joined together")
-plt.savefig(f"out/compundDiversity", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_compundDiversity", bbox_inches="tight")
 
 #%%
 authors_df["compound_sexuality"] = authors_df.apply(
@@ -300,7 +295,7 @@ authors_df.compound_sexuality.value_counts().plot(kind="bar")
 plt.title('"Compound" Sexuality of unique first authors')
 plt.ylabel("Count of authors")
 plt.xlabel("joined together")
-plt.savefig(f"out/compundSexuality", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_compundSexuality", bbox_inches="tight")
 
 #%%
 authors_df["compound_genderalive"] = authors_df.apply(
@@ -310,7 +305,7 @@ authors_df.compound_genderalive.value_counts().plot(kind="bar")
 plt.title('"Compound" Life Status and Gender')
 plt.ylabel("Count of authors")
 plt.xlabel("joined together")
-plt.savefig(f"out/compundSexuality", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_compundSexuality", bbox_inches="tight")
 #%%
 all_df = tb.merge(authors_df, right_on="name", left_on="author_1_name")
 all_df.sample(4)
@@ -322,13 +317,13 @@ all_df.gender.value_counts().plot(kind="bar", rot=0)
 plt.title("Books read, split by Gender of unique first author")
 plt.ylabel("Count of books")
 plt.xlabel("Gender")
-plt.savefig(f"out/gender_of_books_read", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_gender_of_books_read", bbox_inches="tight")
 #%%
 all_df.ethnicity.value_counts().plot(kind="bar", rot=0)
 plt.title("Ethnicity of unique first authors")
 plt.ylabel("Count of books")
 plt.xlabel("The ethnicity I've guessed")
-plt.savefig(f"out/Ethnicity_of_books_read", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_Ethnicity_of_books_read", bbox_inches="tight")
 
 #%%
 all_df["reading_year"] = all_df.started_at.apply(lambda x: x.year)
@@ -346,7 +341,7 @@ plt.title(
 )
 plt.ylabel("Count of books")
 plt.xlabel("Year")
-plt.savefig(f"out/clumsyDiversity", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_clumsyDiversity", bbox_inches="tight")
 
 
 # %%
@@ -359,7 +354,7 @@ fic_data = (
 plt.title("Split between fiction and non fiction by year")
 plt.ylabel("Count of books")
 plt.xlabel("Year")
-plt.savefig(f"out/anualFic_Nonfic", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_anualFic_Nonfic", bbox_inches="tight")
 # %%
 fic_data = (
     known_df.groupby(["Year", "compound_diversity"])
@@ -370,7 +365,7 @@ fic_data = (
 plt.title("Which Ethnicities were Read which Year")
 plt.ylabel("Count of books")
 plt.xlabel("Year")
-plt.savefig(f"out/anualFic_Nonfic", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_anualFic_Nonfic", bbox_inches="tight")
 
 # %%
 fic_data = (
@@ -382,7 +377,7 @@ fic_data = (
 plt.title("Which genders and lifestatus were Read which Year")
 plt.ylabel("Count of books")
 plt.xlabel("Year")
-plt.savefig(f"out/anualFic_Nonfic", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_anualFic_Nonfic", bbox_inches="tight")
 
 # %%
 fic_data = (
@@ -394,7 +389,7 @@ fic_data = (
 plt.title('Split between fiction and non fiction by "compound diversity"')
 plt.ylabel("Count of books")
 plt.xlabel("Somewhat arbitrary Buckets")
-plt.savefig(f"out/compound_diversity_Fic_Nonfic", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_compound_diversity_Fic_Nonfic", bbox_inches="tight")
 
 # %%
 fic_data = (
@@ -406,7 +401,7 @@ fic_data = (
 plt.title('Split between fiction and non fiction by "compound diversity"')
 plt.ylabel("Count of books")
 plt.xlabel("Somewhat arbitrary Buckets")
-plt.savefig(f"out/compound_diversity_Fic_Nonfic", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_compound_diversity_Fic_Nonfic", bbox_inches="tight")
 
 
 # %%
@@ -425,7 +420,7 @@ plt.title(
 )
 plt.ylabel("Pages read")
 plt.xlabel("Year")
-plt.savefig(f"out/publication_yearBarByPages", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_publication_yearBarByPages", bbox_inches="tight")
 
 # %%
 all_df.groupby("format").sum().num_pages.sort_index().plot(kind="bar", rot=20)
@@ -434,7 +429,7 @@ plt.title(
 )
 plt.ylabel("Pages read")
 plt.xlabel("Year")
-plt.savefig(f"out/formatBarByPages", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_formatBarByPages", bbox_inches="tight")
 #%%
 (
     all_df.groupby(["compound_diversity", "ficOrNonFic"])
@@ -447,7 +442,9 @@ plt.title(
 )
 plt.ylabel("Count of pages")
 plt.xlabel("Somewhat arbitrary Buckets")
-plt.savefig(f"out/compound_diversity_Fic_Nonfic_byPages", bbox_inches="tight")
+plt.savefig(
+    f"out/{reader_name}_compound_diversity_Fic_Nonfic_byPages", bbox_inches="tight"
+)
 
 #%%
 all_df.groupby("reading_year").sum().num_pages.sort_index().plot(kind="bar")
@@ -457,7 +454,7 @@ plt.title(
 )
 plt.ylabel("Pages read")
 plt.xlabel("Year")
-plt.savefig(f"out/reading_yearBarByPages", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_reading_yearBarByPages", bbox_inches="tight")
 
 
 # %%
@@ -469,11 +466,11 @@ plt.savefig(f"out/reading_yearBarByPages", bbox_inches="tight")
 plt.title("Mean number of pages per book by each diversity bucket")
 plt.ylabel("pages")
 plt.xlabel("Somewhat arbitrary Buckets")
-plt.savefig(f"out/compound_diversityAvePages", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_compound_diversityAvePages", bbox_inches="tight")
 # %%
 (all_df.groupby("gender").mean().num_pages.plot(kind="bar", stacked=True, rot=20))
 plt.title("Mean number of pages per book by [guessed] gender")
 plt.ylabel("pages")
 plt.xlabel("Somewhat arbitrary Buckets")
-plt.savefig(f"out/sexygenderyAvePages", bbox_inches="tight")
+plt.savefig(f"out/{reader_name}_sexygenderyAvePages", bbox_inches="tight")
 
