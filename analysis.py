@@ -12,6 +12,7 @@ Outputs:
 """
 
 import datetime
+import math
 import os
 
 import matplotlib.pyplot as plt
@@ -28,8 +29,19 @@ OUTPUT_DIR = "out"
 HISTORY_START = datetime.date(2014, 1, 1)
 
 # ── Setup ─────────────────────────────────────────────────────────────────────
+SINGLE_COLOR = "steelblue"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
-plt.rcParams["figure.figsize"] = (9, 6)
+plt.rcParams.update({
+    "figure.figsize":    (9, 5),
+    "axes.spines.top":   False,
+    "axes.spines.right": False,
+    "font.size":         10,
+    "axes.titlesize":    11,
+    "axes.labelsize":    10,
+    "xtick.labelsize":   9,
+    "ytick.labelsize":   9,
+    "legend.fontsize":   9,
+})
 
 
 def save(name: str):
@@ -120,6 +132,65 @@ def normalise_format(name) -> str:
     return n
 
 
+def small_multiples_annual(pivot_df, title, filename, extra_panels=None):
+    """
+    Small multiple line charts from a Year x Category pivot DataFrame.
+    extra_panels: list of (pd.Series, str, str) -- (data, panel_title, color).
+                  These panels have their own y-scale (0-1) and a tinted background.
+    """
+    extras = extra_panels or []
+    cats = sorted(str(c) for c in pivot_df.columns)
+    n = len(cats) + len(extras)
+    ncols = min(4, n)
+    nrows = -(-n // ncols)
+    fig, axes = plt.subplots(nrows, ncols,
+                             figsize=(3.2 * ncols, 2.8 * nrows),
+                             sharex=True,
+                             squeeze=False)
+    axes_flat = axes.flatten()
+    main_ymax = (pivot_df.values.max() * 1.15) or 1
+    for i, cat in enumerate(cats):
+        ax = axes_flat[i]
+        series = pivot_df[cat]
+        ax.plot(series.index, series.values, "o-", lw=1.5, ms=4, color=SINGLE_COLOR)
+        ax.fill_between(series.index, series.values, alpha=0.1, color=SINGLE_COLOR)
+        ax.set_title(str(cat).replace("\n", " / "), fontsize=8, pad=3)
+        ax.set_ylim(0, main_ymax)
+        step = max(1, len(series) // 4)
+        ticks = series.index[::step]
+        ax.set_xticks(ticks)
+        ax.set_xticklabels([f"'{str(int(y))[-2:]}" for y in ticks], fontsize=7)
+        ax.tick_params(axis="y", labelsize=7)
+    for j, (series, ptitle, color) in enumerate(extras):
+        ax = axes_flat[len(cats) + j]
+        ax.plot(series.index, series.values, "o-", lw=1.5, ms=4, color=color)
+        ax.fill_between(series.index, series.values, alpha=0.12, color=color)
+        ax.set_title(ptitle, fontsize=8, pad=3)
+        ax.set_ylim(0, 1.05)
+        step = max(1, len(series) // 4)
+        ticks = series.index[::step]
+        ax.set_xticks(ticks)
+        ax.set_xticklabels([f"'{str(int(y))[-2:]}" for y in ticks], fontsize=7)
+        ax.tick_params(axis="y", labelsize=7)
+        ax.set_facecolor("#f7f7f7")
+    for k in range(n, len(axes_flat)):
+        axes_flat[k].set_visible(False)
+    plt.suptitle(title, fontsize=10)
+    plt.tight_layout()
+    save(filename)
+
+
+def _row_entropy(row):
+    """Normalized Shannon entropy for one row of category counts (0=all one group, 1=equal)."""
+    total = row.sum()
+    if total == 0:
+        return 0
+    p = row[row > 0] / total
+    h = -sum(pi * math.log2(pi) for pi in p)
+    k = int((row > 0).sum())
+    return h / math.log2(k) if k > 1 else 0
+
+
 # ── Load books ────────────────────────────────────────────────────────────────
 print(f"Loading books from '{BOOKS_FILE}' …")
 tb = pd.read_csv(BOOKS_FILE)
@@ -161,7 +232,7 @@ if has_duration.empty:
     print("  No started_at + read_at pairs found yet — waterfall chart skipped.")
     print("  Fill in 'started_at' in books_annotated.xlsx and re-run.")
 else:
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(9, 10))
     hist_start = pd.Timestamp(HISTORY_START)
     for idx, row in has_duration.iterrows():
         start = max(row.started_at, hist_start)
@@ -180,8 +251,8 @@ else:
         )
     fig.autofmt_xdate()
     ax.set_xlim([HISTORY_START, datetime.date.today()])
+    ax.spines["left"].set_visible(False)
     plt.tick_params(axis="y", which="both", left=False, right=False, labelleft=False)
-    plt.grid(True)
     plt.title(f"Books and Duration — {HISTORY_START.year}–present")
     save("bookWaterfall_allTime")
     plt.savefig(f"{OUTPUT_DIR}/{READER_NAME}_bookWaterfall_allTime.pdf", bbox_inches="tight")
@@ -189,12 +260,16 @@ else:
 # ── Reading cadence ───────────────────────────────────────────────────────────
 month_data = dated["Month"].value_counts().sort_index()
 month_data.index = [MONTH_ABBR.get(m, m) for m in month_data.index]
-month_data.plot(kind="bar", rot=0)
+month_data.plot(kind="bar", rot=0, color=SINGLE_COLOR)
 plt.title("Books Finished Each Month")
 plt.ylabel("Count of books")
 save("booksPerMonth")
 
-short_year_index(dated["Year"].value_counts().sort_index()).plot(kind="bar", rot=0)
+year_counts = dated["Year"].value_counts().sort_index()
+fig, ax = plt.subplots()
+ax.plot(year_counts.index, year_counts.values, "o-", lw=2, color=SINGLE_COLOR)
+ax.set_xticks(year_counts.index[::2])
+ax.set_xticklabels([f"'{str(int(y))[-2:]}" for y in year_counts.index[::2]])
 plt.title("Books Finished Each Year")
 plt.ylabel("Count of books")
 save("booksPerYear")
@@ -206,14 +281,16 @@ if has_data(tb["publication_year"]):
         f"mean: {int(tb.publication_year.mean())}"
     )
     fig, ax = plt.subplots()
-    tb.publication_year.hist(bins=50, ax=ax)
+    tb.publication_year.hist(bins=50, ax=ax, color=SINGLE_COLOR)
+    ax.grid(False)
     ax.set_title("Publication year of books read")
     ax.set_ylabel("Count of books")
     ax.set_xlabel("Year published")
 
-    # Inset in the empty ancient-years space: shows 1800+ in detail
+    # Inset in the empty ancient-years space: shows 1900+ in detail
     ax_ins = ax.inset_axes([-500, 50, 2000, 300], transform=ax.transData)
-    tb.publication_year[tb.publication_year >= 1900].hist(bins=40, ax=ax_ins, color="steelblue", alpha=0.8)
+    tb.publication_year[tb.publication_year >= 1900].hist(bins=40, ax=ax_ins, color=SINGLE_COLOR, alpha=0.8)
+    ax_ins.grid(False)
     ax_ins.set_title("Since 1900", fontsize=8, pad=3)
     ax_ins.tick_params(labelsize=7)
     ax_ins.set_facecolor("#f5f5f5")
@@ -226,30 +303,42 @@ if has_data(tb["publication_year"]):
     lag = lag_df.loc[lag_df["lag"].between(0, 500), "lag"]
     if not lag.empty:
         fig, ax = plt.subplots()
-        lag.hist(bins=30, ax=ax, color="steelblue", alpha=0.8)
+        lag.hist(bins=30, ax=ax, color=SINGLE_COLOR, alpha=0.8)
+        ax.grid(False)
         ax.axvline(lag.median(), color="red", linestyle="--", lw=1.5,
                    label=f"Median: {int(lag.median())} yrs")
         ax.set_title("How old were books when you read them?")
         ax.set_xlabel("Years since publication")
         ax.set_ylabel("Count of books")
         ax.legend()
+
+        # Inset: detail of the 0–100 year range
+        ax_ins = ax.inset_axes([0.45, 0.35, 0.52, 0.58])
+        lag[lag <= 100].hist(bins=25, ax=ax_ins, color=SINGLE_COLOR, alpha=0.8)
+        ax_ins.grid(False)
+        ax_ins.set_title("First 100 years", fontsize=8, pad=3)
+        ax_ins.set_xlabel("Years since publication", fontsize=7)
+        ax_ins.tick_params(labelsize=7)
+        ax_ins.set_facecolor("#f5f5f5")
+
         save("publicationLag")
 
         med_lag = lag_df.loc[lag_df["lag"].between(0, 500)].groupby(
             lag_df["read_at"].dt.year)["lag"].median()
         fig, ax = plt.subplots()
-        ax.plot(med_lag.index, med_lag.values, "o-", color="steelblue", lw=2)
+        ax.plot(med_lag.index, med_lag.values, "o-", color=SINGLE_COLOR, lw=2)
         ax.set_title("Median publication age of books read per year")
         ax.set_xlabel("Year")
         ax.set_ylabel("Median years since publication")
-        ax.grid(True, alpha=0.3)
         save("publicationLagTrend")
 if has_data(tb["num_pages"]):
     print(
         f"Median pages: {int(tb.num_pages.median())},  "
         f"mean: {int(tb.num_pages.mean())}"
     )
-    tb.num_pages.hist(bins=45)
+    fig, ax = plt.subplots()
+    tb.num_pages.hist(bins=45, ax=ax, color=SINGLE_COLOR)
+    ax.grid(False)
     plt.title("Page count of books read")
     plt.ylabel("Count of books")
     plt.xlabel("Number of pages")
@@ -257,7 +346,7 @@ if has_data(tb["num_pages"]):
 
 # ── Format ────────────────────────────────────────────────────────────────────
 if has_data(tb["format"]):
-    tb.format.value_counts().plot(kind="bar", rot=20)
+    tb.format.value_counts().plot(kind="bar", rot=20, color=SINGLE_COLOR)
     plt.title("Books read by format")
     plt.ylabel("Count of books")
     plt.xlabel("Format")
@@ -277,14 +366,14 @@ if has_data(tb["format"]):
 
 # ── Publisher ─────────────────────────────────────────────────────────────────
 if has_data(tb["publisher"]):
-    tb["publisher"].apply(normalise_publisher).value_counts().head(20).plot.barh()
+    tb["publisher"].apply(normalise_publisher).value_counts().head(20).plot.barh(color=SINGLE_COLOR)
     plt.title("Top publishers (20)")
     plt.xlabel("Count of books")
     save("publisher")
 
 # ── Rating ────────────────────────────────────────────────────────────────────
 if has_data(tb["rating"]):
-    tb.rating.value_counts().sort_index().plot(kind="bar", rot=0)
+    tb.rating.value_counts().sort_index().plot(kind="bar", rot=0, color=SINGLE_COLOR)
     plt.title("My ratings")
     plt.ylabel("Count of books")
     plt.xlabel("Rating (1–5)")
@@ -307,25 +396,27 @@ if has_data(tb["rating"]):
 author_counts = tb["author_1_name"].value_counts()
 prolific = author_counts[author_counts > 1].sort_values()
 if not prolific.empty:
-    prolific.plot(kind="barh", figsize=(9, max(4, len(prolific) * 0.35)))
+    fig, ax = plt.subplots(figsize=(9, max(2, len(prolific) * 0.18)))
+    ax.hlines(prolific.index, 0, prolific.values, color="lightgray", linewidth=1.5)
+    ax.scatter(prolific.values, prolific.index, s=50, color=SINGLE_COLOR, zorder=3)
     plt.title("Authors read more than once")
     plt.xlabel("Books read")
     plt.tight_layout()
     save("prolificAuthors")
 if "ficOrNonFic" in tb.columns and has_data(tb["ficOrNonFic"]):
-    tb.ficOrNonFic.value_counts().plot(kind="bar", rot=20)
+    tb.ficOrNonFic.value_counts().plot(kind="bar", rot=20, color=SINGLE_COLOR)
     plt.title("Fiction vs Non-Fiction")
     plt.ylabel("Count of books")
     save("ficNonfic")
 
 if "SeriesOrStandalone" in tb.columns and has_data(tb["SeriesOrStandalone"]):
-    tb.SeriesOrStandalone.value_counts().plot(kind="bar", rot=20)
+    tb.SeriesOrStandalone.value_counts().plot(kind="bar", rot=20, color=SINGLE_COLOR)
     plt.title("Series vs Stand-Alone")
     plt.ylabel("Count of books")
     save("seriesStandalone")
 
 if "LGBTQIA_Characters" in tb.columns and has_data(tb["LGBTQIA_Characters"]):
-    tb.LGBTQIA_Characters.value_counts().plot(kind="bar", rot=20)
+    tb.LGBTQIA_Characters.value_counts().plot(kind="bar", rot=20, color=SINGLE_COLOR)
     plt.title("LGBTQIA Characters in Books")
     plt.ylabel("Count of books")
     save("lgbtqiaCharacters")
@@ -351,17 +442,17 @@ else:
     )
 
     # Unique-author charts
-    authors_df.gender.value_counts().plot(kind="bar", rot=0)
+    authors_df.gender.value_counts().plot(kind="bar", rot=0, color=SINGLE_COLOR)
     plt.title("Gender of unique first authors")
     plt.ylabel("Count of authors")
     save("uniqueAuthors_gender")
 
-    authors_df.ethnicity.value_counts().plot(kind="bar", rot=0)
+    authors_df.ethnicity.value_counts().plot(kind="bar", rot=0, color=SINGLE_COLOR)
     plt.title("Ethnicity of unique first authors")
     plt.ylabel("Count of authors")
     save("uniqueAuthors_ethnicity")
 
-    authors_df.DeadorAlive.value_counts().plot(kind="bar", rot=0)
+    authors_df.DeadorAlive.value_counts().plot(kind="bar", rot=0, color=SINGLE_COLOR)
     plt.title("Authors: dead or alive")
     plt.ylabel("Count of authors")
     save("uniqueAuthors_lifeStatus")
@@ -371,24 +462,24 @@ else:
     plt.xlabel("Count of authors")
     save("uniqueAuthors_nationality")
 
-    authors_df.LGBTQI_Authors.value_counts().plot(kind="bar", rot=0)
+    authors_df.LGBTQI_Authors.value_counts().plot(kind="bar", rot=0, color=SINGLE_COLOR)
     plt.title("Sexuality of unique first authors")
     plt.ylabel("Count of authors")
     save("uniqueAuthors_sexuality")
 
-    authors_df.compound_diversity.value_counts().plot(kind="bar", figsize=(12, 6), rot=0)
+    authors_df.compound_diversity.value_counts().plot(kind="bar", figsize=(12, 6), rot=0, color=SINGLE_COLOR)
     plt.title("Compound diversity of unique first authors")
     plt.ylabel("Count of authors")
     plt.tight_layout()
     save("uniqueAuthors_compoundDiversity")
 
-    authors_df.compound_sexuality.value_counts().plot(kind="bar", figsize=(10, 6), rot=0)
+    authors_df.compound_sexuality.value_counts().plot(kind="bar", figsize=(10, 6), rot=0, color=SINGLE_COLOR)
     plt.title("Compound sexuality of unique first authors")
     plt.ylabel("Count of authors")
     plt.tight_layout()
     save("uniqueAuthors_compoundSexuality")
 
-    authors_df.compound_genderalive.value_counts().plot(kind="bar", figsize=(10, 6), rot=0)
+    authors_df.compound_genderalive.value_counts().plot(kind="bar", figsize=(10, 6), rot=0, color=SINGLE_COLOR)
     plt.title("Compound life status + gender of unique first authors")
     plt.ylabel("Count of authors")
     plt.tight_layout()
@@ -403,15 +494,59 @@ else:
     else:
         all_df["reading_year"] = all_df["read_at"].dt.year
 
-        all_df.gender.value_counts().plot(kind="bar", rot=0)
+        all_df.gender.value_counts().plot(kind="bar", rot=0, color=SINGLE_COLOR)
         plt.title("Books read by gender of first author")
         plt.ylabel("Count of books")
         save("booksRead_gender")
 
-        all_df.ethnicity.value_counts().plot(kind="bar", rot=0)
+        all_df.ethnicity.value_counts().plot(kind="bar", rot=0, color=SINGLE_COLOR)
         plt.title("Books read by ethnicity of first author")
         plt.ylabel("Count of books")
         save("booksRead_ethnicity")
+
+        # ── Breakdown small multiples (lollipop grid) ──────────────────────────
+        panels = []
+        for col, label in [("ficOrNonFic", "Fiction /\nNon-Fiction"),
+                           ("SeriesOrStandalone", "Series /\nStandalone"),
+                           ("LGBTQIA_Characters", "LGBTQIA\nChars")]:
+            if col in tb.columns and has_data(tb[col]):
+                panels.append((tb[col].value_counts(), label))
+        panels.append((all_df["gender"].value_counts(), "Author\nGender"))
+        panels.append((all_df["ethnicity"].value_counts(), "Author\nEthnicity"))
+        if panels:
+            fig, axes = plt.subplots(1, len(panels), figsize=(2.5 * len(panels), 2))
+            if len(panels) == 1:
+                axes = [axes]
+            for ax, (data, ptitle) in zip(axes, panels):
+                ax.hlines(data.index, 0, data.values, color="lightgray", linewidth=1.5)
+                ax.scatter(data.values, data.index, s=60, color=SINGLE_COLOR, zorder=3)
+                ax.set_title(ptitle, fontsize=9)
+                ax.tick_params(labelsize=8)
+            plt.suptitle("Reading breakdown", fontsize=10)
+            plt.tight_layout()
+            save("breakdownSM")
+
+        # ── Diversity bubble: gender × ethnicity ─────────────────────────────────
+        counts_2d = all_df.groupby(["ethnicity", "gender"]).size().reset_index(name="n")
+        if not counts_2d.empty:
+            genders = sorted(counts_2d["gender"].unique())
+            ethnicities = sorted(counts_2d["ethnicity"].unique())
+            fig, ax = plt.subplots(figsize=(max(5, len(ethnicities) * 1.2), max(3, len(genders) * 0.9)))
+            for _, row in counts_2d.iterrows():
+                xi = ethnicities.index(row["ethnicity"])
+                yi = genders.index(row["gender"])
+                ax.scatter(xi, yi, s=row["n"] * 20, color=SINGLE_COLOR, alpha=0.7, zorder=3)
+                ax.text(xi, yi, str(row["n"]), ha="center", va="center",
+                        fontsize=8, color="white", fontweight="bold", zorder=4)
+            ax.set_xticks(range(len(ethnicities)))
+            ax.set_xticklabels(ethnicities)
+            ax.set_yticks(range(len(genders)))
+            ax.set_yticklabels(genders)
+            ax.set_title("Books read: author gender × ethnicity")
+            ax.grid(True, alpha=0.15, zorder=0)
+            ax.set_axisbelow(True)
+            plt.tight_layout()
+            save("diversityBubble")
 
         # Rating by author demographic
         rated_all = all_df[(all_df["rating"].notna()) & (all_df["rating"] > 0)].copy()
@@ -423,7 +558,8 @@ else:
                 ["Gender", "Ethnicity", "Sexuality"],
             ):
                 means = rated_all.groupby(col)["rating"].mean().sort_values()
-                means.plot(kind="barh", ax=ax)
+                ax.hlines(means.index, 0, means.values, color="lightgray", linewidth=1.5)
+                ax.scatter(means.values, means.index, s=70, color=SINGLE_COLOR, zorder=3)
                 ax.set_title(f"Avg rating by {title}")
                 ax.set_xlabel("Mean rating")
                 ax.set_xlim(0, 5)
@@ -456,7 +592,23 @@ else:
                 plt.ylabel("Count of books")
                 save("annualFicNonfic")
 
-            # Diversity trend lines: % female / non-white / LGBTQIA+ by year
+            # Small multiples versions of the annual stacked charts
+            div_pivot = dated_authors.groupby(["Year", "compound_diversity"]).size().unstack(fill_value=0)
+            entropy_series = div_pivot.apply(_row_entropy, axis=1)
+            small_multiples_annual(
+                div_pivot,
+                "Author diversity by year", "annualDiversity_sm",
+                extra_panels=[(entropy_series, "Diversity\nindex (0–1)", "coral")],
+            )
+            small_multiples_annual(
+                dated_authors.groupby(["Year", "compound_genderalive"]).size().unstack(fill_value=0),
+                "Gender and life status by year", "annualGenderAlive_sm"
+            )
+            if "ficOrNonFic" in dated_authors.columns and has_data(dated_authors["ficOrNonFic"]):
+                small_multiples_annual(
+                    dated_authors.groupby(["Year", "ficOrNonFic"]).size().unstack(fill_value=0),
+                    "Fiction vs non-fiction by year", "annualFicNonfic_sm"
+                )
             dy = dated_authors.copy()
             dy["is_female"]   = dy["gender"] == "Female"
             dy["is_nonwhite"] = dy["ethnicity"] != "White"
@@ -502,24 +654,40 @@ else:
         if has_data(all_df["num_pages"]):
             s_pub = all_df.dropna(subset=["publication_year"]).groupby("publication_year")["num_pages"].sum().sort_index()
             fig, ax = plt.subplots()
-            ax.bar(s_pub.index.astype(int), s_pub.values, width=0.8)
+            ax.bar(s_pub.index.astype(int), s_pub.values, width=0.8, color=SINGLE_COLOR)
+            ax.grid(False)
             ax.set_title("Pages read by publication year")
             ax.set_ylabel("Pages read")
             ax.set_xlabel("Year published")
+
+            # Inset: 1900+ pages, placed in the empty ancient-years zone
+            ymax = s_pub.values.max()
+            ax_ins2 = ax.inset_axes([-500, ymax * 0.35, 2000, ymax * 0.58], transform=ax.transData)
+            s_1900 = s_pub[s_pub.index >= 1900]
+            ax_ins2.bar(s_1900.index.astype(int), s_1900.values, width=0.8, color=SINGLE_COLOR, alpha=0.8)
+            ax_ins2.grid(False)
+            ax_ins2.set_title("Since 1900", fontsize=8, pad=3)
+            ax_ins2.tick_params(labelsize=7)
+            ax_ins2.set_facecolor("#f5f5f5")
+
             save("pages_byPublicationYear")
 
             s_read = all_df.groupby("reading_year")["num_pages"].sum().sort_index()
             fig, ax = plt.subplots()
-            ax.bar(s_read.index.astype(int), s_read.values, width=0.6)
+            ax.plot(s_read.index.astype(int), s_read.values, "o-", lw=2, color=SINGLE_COLOR)
+            ax.set_xticks(s_read.index[::2])
+            ax.set_xticklabels([f"'{str(int(y))[-2:]}" for y in s_read.index[::2]])
             ax.set_title("Pages read per calendar year")
             ax.set_ylabel("Pages read")
-            ax.set_xlabel("Year")
             save("pages_byReadingYear")
 
             if has_data(all_df["format"]):
-                all_df.groupby("format")["num_pages"].sum().sort_index().plot(kind="bar", rot=20)
+                fmt_pages = all_df.groupby("format")["num_pages"].sum().sort_values()
+                fig, ax = plt.subplots()
+                ax.hlines(fmt_pages.index, 0, fmt_pages.values, color="lightgray", linewidth=1.5)
+                ax.scatter(fmt_pages.values, fmt_pages.index, s=60, color=SINGLE_COLOR, zorder=3)
                 plt.title("Pages read by format")
-                plt.ylabel("Pages read")
+                plt.tight_layout()
                 save("pages_byFormat")
 
             if "ficOrNonFic" in all_df.columns and has_data(all_df["ficOrNonFic"]):
