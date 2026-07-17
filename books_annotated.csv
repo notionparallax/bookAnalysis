@@ -14,18 +14,18 @@ book_id,title,author_1_name,isbn,isbn13,rating,publisher,format,num_pages,public
 53855535,Songlines: the Power and Promise,Margo Neale,1760761184,9781760761189,4.0,Thames & Hudson Australia Pty Ltd,Paperback,216.0,2020.0,,2025-07-14,2025-07-12,,1,NonFiction,Standalone,No
 37969723,"The Silence of the Girls (Women of Troy, #1)",Pat Barker,,,5.0,Doubleday Books,Hardcover,325.0,2018.0,,2025-07-11,2025-07-11,,1,Fiction,Series,No
 43908991,Parable of the Sower: A Graphic Novel Adaptation,Damian Duffy,1419731335,9781419731334,4.0,Harry N. Abrams,Hardcover,266.0,2020.0,,2025-05-22,2025-05-14,,1,Fiction,Series,No
-209364645,"The Korean Myths: A Guide to the Gods, Heroes and Legends",Heinz Insu Fenkl,0500027668,9780500027660,4.0,Thames & Hudson,Hardcover,256.0,,,2025-05-14,2025-02-21,,1,NonFiction,Standalone,No
+209364645,"The Korean Myths: A Guide to the Gods, Heroes and Legends",Heinz Insu Fenkl,0500027668,9780500027660,4.0,Thames & Hudson,Hardcover,256.0,,2025-02-22,2025-05-14,2025-02-21,,1,NonFiction,Standalone,No
 80289417,Frankenstein,Mary Wollstonecraft Shelley,1544917023,9781544917023,4.0,CreateSpace Independent Publishing Platform,Paperback,90.0,1818.0,,2025-04-26,2025-04-29,,1,Fiction,Standalone,No
 966835,The Last Man,Mary Wollstonecraft Shelley,0192838652,9780192838650,4.0,Oxford University Press,Paperback,479.0,1826.0,,2025-03-27,2025-04-29,,1,Fiction,Standalone,No
-29084996,Kipps: The Story of a Simple Soul,H.G. Wells,,,4.0,,Kindle Edition,244.0,1905.0,,2025-01-22,2024-12-27,,1,Fiction,Standalone,No
+29084996,Kipps: The Story of a Simple Soul,H.G. Wells,,,4.0,,Kindle Edition,244.0,1905.0,2024-12-28,2025-01-22,2024-12-27,,1,Fiction,Standalone,No
 146756038,NSS Cavern Diving Manual,John L. Zumerick,,,4.0,"The Cave Diving Section of the National Speleological society, Inc",Paperback,121.0,,,2025-02-21,2025-02-21,,1,NonFiction,Standalone,No
 203225397,Shipwrecks of the Dover Straits,Stefan Panis,1849954968,9781849954969,3.0,Whittles Publishing,Paperback,208.0,,,2025-02-19,2025-02-18,,1,NonFiction,Standalone,No
-59366123,Butts: A Backstory,Heather Radke,1982135484,9781982135485,4.0,Avid Reader Press / Simon & Schuster,Hardcover,311.0,2022.0,,2025-01-03,2024-08-20,,1,NonFiction,Standalone,No
+59366123,Butts: A Backstory,Heather Radke,1982135484,9781982135485,4.0,Avid Reader Press / Simon & Schuster,Hardcover,311.0,2022.0,2024-08-20,2025-01-03,2024-08-20,,1,NonFiction,Standalone,No
 40864002,"A Psalm for the Wild-Built (Monk & Robot, #1)",Becky Chambers,,,4.0,Tordotcom,ebook,151.0,2021.0,,2024-07-23,2025-01-03,,1,Fiction,Series,Yes
 57938390,The Measure of Time (Guido Guerrieri Series),Gianrico Carofiglio,1913394484,9781913394486,3.0,Bitter Lemon Press,Paperback,288.0,2019.0,,2025-01-02,2025-01-01,,1,Fiction,Series,No
-209200369,"Polostan (Bomb Light, #1)",Neal Stephenson,0008262616,9780008262617,4.0,The Borough Press,Kindle Edition,310.0,2024.0,,2024-12-22,2024-12-16,,1,Fiction,Series,No
-75665322,Perhaps the Stars (Terra Ignota Book 4),Ada Palmer,1786699591,9781786699596,4.0,Head of Zeus -- an AdAstra Book,Kindle Edition,609.0,2021.0,,2024-12-15,2024-10-25,,1,Fiction,Series,Yes
-75520916,"The Will to Battle (Terra Ignota, #3)",Ada Palmer,1786699559,9781786699558,4.0,Head of Zeus,Kindle Edition,448.0,2017.0,,2024-10-25,2024-10-13,,1,Fiction,Series,Yes
+209200369,"Polostan (Bomb Light, #1)",Neal Stephenson,0008262616,9780008262617,4.0,The Borough Press,Kindle Edition,310.0,2024.0,2024-12-16,2024-12-22,2024-12-16,,1,Fiction,Series,No
+75665322,Perhaps the Stars (Terra Ignota Book 4),Ada Palmer,1786699591,9781786699596,4.0,Head of Zeus -- an AdAstra Book,Kindle Edition,609.0,2021.0,2024-10-26,2024-12-15,2024-10-25,,1,Fiction,Series,Yes
+75520916,"The Will to Battle (Terra Ignota, #3)",Ada Palmer,1786699559,9781786699558,4.0,Head of Zeus,Kindle Edition,448.0,2017.0,2024-10-13,2024-10-25,2024-10-13,,1,Fiction,Series,Yes
 768889,"A Storm of Swords: Steel and Snow (A Song of Ice and Fire, #3.1)",George R.R. Martin,0006479901,9780006479901,5.0,HarperVoyager,Paperback,663.0,2000.0,,,2013-04-19,,1,Fiction,Series,Yes
 27385782,Epicureanism: A Very Short Introduction,Catherine Wilson,0191512680,9780191512681,4.0,OUP Oxford,Kindle Edition,160.0,,,2024-10-15,2024-10-15,,1,NonFiction,Standalone,No
 75548502,Seven Surrenders (Terra Ignota Book 2),Ada Palmer,1786699516,9781786699510,4.0,Head of Zeus,Kindle Edition,386.0,2017.0,,2024-10-11,2024-10-06,,1,Fiction,Series,Yes
